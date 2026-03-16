@@ -23,21 +23,29 @@ api GET "/api/dashboards/home" > /dev/null
 echo "Connected: ${GRAFANA_URL}"
 [[ "$DRY_RUN" == "true" ]] && echo "(dry run)"
 
-# Dashboard
-echo "Deploying dashboard..."
-PAYLOAD=$(python3 - <<PYEOF
+push_dashboard() {
+  local file="$1"
+  local label="$2"
+  local payload
+  payload=$(python3 - <<PYEOF
 import json
-with open('${SCRIPT_DIR}/dashboard.json') as f:
+with open('${file}') as f:
     d = json.load(f)
 d.pop('id', None)
 d.pop('version', None)
 print(json.dumps({'dashboard': d, 'folderUid': '${FOLDER_UID}', 'overwrite': True}))
 PYEOF
 )
+  local url
+  url=$(api POST "/api/dashboards/db" --data "$payload" | python3 -c "import sys,json; print(json.load(sys.stdin).get('url',''))")
+  echo "  ${label}: ${GRAFANA_URL}${url}"
+}
 
+# Dashboards
+echo "Deploying dashboards..."
 if [[ "$DRY_RUN" != "true" ]]; then
-  URL=$(api POST "/api/dashboards/db" --data "$PAYLOAD" | python3 -c "import sys,json; print(json.load(sys.stdin).get('url',''))")
-  echo "  Dashboard: ${GRAFANA_URL}${URL}"
+  push_dashboard "${SCRIPT_DIR}/dashboard.json" "UPS Monitoring"
+  push_dashboard "${SCRIPT_DIR}/fleet-dashboard.json" "UPS Fleet"
 fi
 
 # Alert rules
