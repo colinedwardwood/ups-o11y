@@ -957,13 +957,13 @@
               "viz": false
             },
             "insertNulls": false,
-            "lineInterpolation": "linear",
+            "lineInterpolation": "smooth",
             "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
             },
-            "showPoints": "auto",
+            "showPoints": "never",
             "showValues": false,
             "spanNulls": false,
             "stacking": {
@@ -1026,9 +1026,9 @@
           },
           "editorMode": "code",
           "expr": "network_ups_tools_ups_realpower{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "instant": true,
+          "instant": false,
           "legendFormat": "Watts",
-          "range": false,
+          "range": true,
           "refId": "A"
         }
       ],
