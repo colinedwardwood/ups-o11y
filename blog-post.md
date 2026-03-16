@@ -8,8 +8,8 @@ This is how I fixed that.
 
 ```
 Eaton UPS A (USB)  ──┐
-                      ├── NUT (upsd + upsmon)     port 3493, localhost only
-Eaton UPS B (USB)  ──┘     └── nut_exporter       :9199, Prometheus metrics
+                     ├── NUT (upsd + upsmon)          :3493, localhost only
+Eaton UPS B (USB)  ──┘     └── nut_exporter           :9199, Prometheus metrics
                                    └── Grafana Alloy  remote_write → Grafana Cloud
 ```
 
@@ -28,14 +28,6 @@ battery.charge,battery.charge.low,battery.runtime,battery.voltage,
 battery.voltage.nominal,input.voltage,input.voltage.nominal,
 output.voltage,ups.load,ups.realpower,ups.status
 ```
-
-I also found a few things in my original setup worth fixing:
-- `upsd.conf` was listening on `0.0.0.0` — no reason for that since the exporter is local
-- The nut_exporter binary was v3.1.1, running out of my home directory as my own user with `Restart=on-abort`
-- My Alloy scrape used `job_name = "nut-exporter"` but the dashboard queries expected `custom/nut_exporter`, so some panels were silently returning nothing on fresh deploys
-- Credentials were hardcoded in the install script
-
-None of these were causing active problems but they're the kind of thing that bites you later.
 
 ## Deploying it
 

@@ -19,8 +19,8 @@ api() {
 }
 
 # Preflight
-ORG=$(api GET "/api/org" | python3 -c "import sys,json; print(json.load(sys.stdin).get('name','?'))")
-echo "Connected: ${ORG} @ ${GRAFANA_URL}"
+api GET "/api/dashboards/home" > /dev/null
+echo "Connected: ${GRAFANA_URL}"
 [[ "$DRY_RUN" == "true" ]] && echo "(dry run)"
 
 # Dashboard
@@ -43,7 +43,7 @@ fi
 # Alert rules
 echo "Deploying alert rules..."
 python3 - <<PYEOF
-import json, sys, urllib.request, urllib.error
+import json, sys, subprocess
 
 try:
     import yaml
@@ -51,20 +51,22 @@ except ImportError:
     print("  PyYAML not installed — skipping alert push (pip install pyyaml)")
     sys.exit(0)
 
-TOKEN = "${GRAFANA_TOKEN}"
-BASE  = "${GRAFANA_URL}"
+TOKEN  = "${GRAFANA_TOKEN}"
+BASE   = "${GRAFANA_URL}"
 FOLDER = "${FOLDER_UID}"
-DRY   = "${DRY_RUN}" == "true"
+DRY    = "${DRY_RUN}" == "true"
 
-def api(method, path, payload=None):
-    req = urllib.request.Request(
-        BASE + path,
-        data=json.dumps(payload).encode() if payload else None,
-        method=method,
-        headers={"Authorization": f"Bearer {TOKEN}", "Content-Type": "application/json"},
-    )
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read())
+def curl(method, path, payload=None):
+    cmd = ["curl", "-fsSL", "-X", method,
+           "-H", f"Authorization: Bearer {TOKEN}",
+           "-H", "Content-Type: application/json",
+           BASE + path]
+    if payload:
+        cmd += ["--data", json.dumps(payload)]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        raise RuntimeError(f"HTTP error on {method} {path}: {r.stderr}")
+    return json.loads(r.stdout)
 
 with open("${SCRIPT_DIR}/alerts.yaml") as f:
     spec = yaml.safe_load(f)
@@ -84,14 +86,11 @@ for group in spec.get("groups", []):
             print(f"  [dry run] {rule['title']}")
             continue
         try:
-            api("PUT", f"/api/v1/provisioning/alert-rules/{rule['uid']}", body)
+            curl("PUT", f"/api/v1/provisioning/alert-rules/{rule['uid']}", body)
             print(f"  updated: {rule['title']}")
-        except urllib.error.HTTPError as e:
-            if e.code == 404:
-                api("POST", "/api/v1/provisioning/alert-rules", body)
-                print(f"  created: {rule['title']}")
-            else:
-                raise
+        except RuntimeError:
+            curl("POST", "/api/v1/provisioning/alert-rules", body)
+            print(f"  created: {rule['title']}")
 PYEOF
 
 echo "Done."
