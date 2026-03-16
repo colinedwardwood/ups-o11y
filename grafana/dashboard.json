@@ -65,7 +65,7 @@
         "textMode": "name",
         "wideLayout": true
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -133,7 +133,7 @@
         "textMode": "name",
         "wideLayout": true
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -201,7 +201,7 @@
         "textMode": "name",
         "wideLayout": true
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -225,14 +225,64 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 300
+              },
+              {
+                "color": "yellow",
+                "value": 600
+              },
+              {
+                "color": "green",
+                "value": 1200
+              }
+            ]
+          },
+          "unit": "s"
+        }
+      },
       "gridPos": {
         "h": 4,
         "w": 6,
         "x": 18,
         "y": 0
       },
-      "id": 7,
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "id": 23,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -240,36 +290,70 @@
             "uid": "grafanacloud-prom"
           },
           "editorMode": "code",
-          "expr": "network_ups_tools_device_uptime{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
           "instant": true,
-          "legendFormat": "Uptime",
+          "legendFormat": "Runtime",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Uptime",
-      "type": "stat",
+      "title": "Battery Runtime",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
       "fieldConfig": {
         "defaults": {
           "color": {
             "mode": "thresholds"
           },
-          "unit": "s",
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "#ccccdc",
+                "color": "red",
                 "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 25
+              },
+              {
+                "color": "yellow",
+                "value": 50
+              },
+              {
+                "color": "green",
+                "value": 80
               }
             ]
-          }
+          },
+          "unit": "percent"
         }
       },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 4
+      },
+      "id": 21,
       "options": {
-        "colorMode": "value",
-        "graphMode": "none",
-        "justifyMode": "auto",
+        "barShape": "rounded",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": true,
+          "centerGlow": true,
+          "gradient": true
+        },
+        "endpointMarker": "glow",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
         "orientation": "auto",
         "reduceOptions": {
           "calcs": [
@@ -278,9 +362,32 @@
           "fields": "",
           "values": false
         },
-        "textMode": "auto",
-        "wideLayout": true
-      }
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": true,
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "network_ups_tools_battery_charge{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "instant": true,
+          "legendFormat": "Charge",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Battery Charge",
+      "type": "gauge"
     },
     {
       "datasource": {
@@ -345,13 +452,16 @@
         }
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
+        "h": 6,
+        "w": 18,
+        "x": 6,
         "y": 4
       },
       "id": 1,
       "options": {
+        "annotations": {
+          "multiLane": false
+        },
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -364,7 +474,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -402,6 +512,95 @@
         "type": "prometheus",
         "uid": "grafanacloud-prom"
       },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "yellow",
+                "value": 60
+              },
+              {
+                "color": "orange",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 10
+      },
+      "id": 22,
+      "options": {
+        "barShape": "rounded",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": true,
+          "centerGlow": true,
+          "gradient": true
+        },
+        "endpointMarker": "glow",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": true,
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "network_ups_tools_ups_load{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "instant": true,
+          "legendFormat": "Load",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "UPS Load",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
       "description": "This shows the voltage coming from the grid compared to the nominal value and the standard +/- 5%",
       "fieldConfig": {
         "defaults": {
@@ -414,6 +613,8 @@
             "axisColorMode": "text",
             "axisLabel": "",
             "axisPlacement": "auto",
+            "axisSoftMax": 127,
+            "axisSoftMin": 113,
             "barAlignment": 0,
             "barWidthFactor": 0.6,
             "drawStyle": "line",
@@ -426,7 +627,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 1,
+            "lineWidth": 2,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -524,19 +725,47 @@
                   "fixedColor": "blue",
                   "mode": "fixed"
                 }
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "dash": [
+                    10,
+                    10
+                  ],
+                  "fill": "dash"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 4
+        "h": 6,
+        "w": 18,
+        "x": 6,
+        "y": 10
       },
       "id": 5,
       "options": {
+        "annotations": {
+          "multiLane": false
+        },
         "legend": {
           "calcs": [],
           "displayMode": "list",
@@ -549,7 +778,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
           "datasource": {
@@ -561,10 +790,22 @@
           "expr": "network_ups_tools_input_voltage{job=\"custom/nut_exporter\", room=\"$room\", ups=\"$device\"}",
           "fullMetaSearch": false,
           "includeNullMetadata": true,
-          "legendFormat": "{{room}}",
+          "legendFormat": "Input",
           "range": true,
-          "refId": "A",
+          "refId": "Input",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "network_ups_tools_output_voltage{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "instant": false,
+          "legendFormat": "Output",
+          "range": true,
+          "refId": "Output"
         },
         {
           "datasource": {
@@ -603,7 +844,195 @@
           "refId": "Nominal"
         }
       ],
-      "title": "Input Voltage",
+      "title": "Input/Output Voltage",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 700
+              },
+              {
+                "color": "red",
+                "value": 900
+              }
+            ]
+          },
+          "unit": "watt"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 6,
+        "x": 0,
+        "y": 16
+      },
+      "id": 24,
+      "options": {
+        "barShape": "rounded",
+        "barWidthFactor": 0.5,
+        "effects": {
+          "barGlow": true,
+          "centerGlow": true,
+          "gradient": true
+        },
+        "endpointMarker": "glow",
+        "minVizHeight": 75,
+        "minVizWidth": 75,
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "segmentCount": 1,
+        "segmentSpacing": 0.3,
+        "shape": "gauge",
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true,
+        "sizing": "auto",
+        "sparkline": true,
+        "textMode": "auto"
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "network_ups_tools_ups_realpower{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "instant": true,
+          "legendFormat": "Watts",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Real Power",
+      "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 700
+              },
+              {
+                "color": "red",
+                "value": 900
+              }
+            ]
+          },
+          "unit": "watt"
+        }
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 18,
+        "x": 6,
+        "y": 16
+      },
+      "id": 25,
+      "options": {
+        "annotations": {
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "editorMode": "code",
+          "expr": "network_ups_tools_ups_realpower{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
+          "instant": true,
+          "legendFormat": "Watts",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Real Power",
       "type": "timeseries"
     },
     {
@@ -635,7 +1064,7 @@
         "h": 4,
         "w": 24,
         "x": 0,
-        "y": 12
+        "y": 22
       },
       "id": 8,
       "maxPerRow": 8,
@@ -656,7 +1085,7 @@
         "textMode": "name",
         "wideLayout": true
       },
-      "pluginVersion": "12.4.0-21959849188.patch2",
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "repeat": "flags",
       "repeatDirection": "h",
       "targets": [
@@ -675,417 +1104,6 @@
       ],
       "title": "Flags",
       "type": "stat"
-    },
-    {
-      "id": 20,
-      "type": "row",
-      "title": "Battery Health",
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 16
-      }
-    },
-    {
-      "id": 21,
-      "type": "gauge",
-      "title": "Battery Charge",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 0,
-        "y": 17
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 25
-              },
-              {
-                "color": "yellow",
-                "value": 50
-              },
-              {
-                "color": "green",
-                "value": 80
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          }
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_battery_charge{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "instant": true,
-          "legendFormat": "Charge",
-          "range": false,
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 22,
-      "type": "gauge",
-      "title": "UPS Load",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 4,
-        "x": 4,
-        "y": 17
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "yellow",
-                "value": 60
-              },
-              {
-                "color": "orange",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 90
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          }
-        }
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "showThresholdLabels": false,
-        "showThresholdMarkers": true
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_ups_load{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "instant": true,
-          "legendFormat": "Load",
-          "range": false,
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 23,
-      "type": "stat",
-      "title": "Battery Runtime",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 8,
-        "y": 17
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "red",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 300
-              },
-              {
-                "color": "yellow",
-                "value": 600
-              },
-              {
-                "color": "green",
-                "value": 1200
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          }
-        }
-      },
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "instant": true,
-          "legendFormat": "Runtime",
-          "range": false,
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 24,
-      "type": "stat",
-      "title": "Real Power",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 8,
-        "y": 20
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "watt",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": 0
-              },
-              {
-                "color": "orange",
-                "value": 700
-              },
-              {
-                "color": "red",
-                "value": 900
-              }
-            ]
-          },
-          "color": {
-            "mode": "thresholds"
-          }
-        }
-      },
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_ups_realpower{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "instant": true,
-          "legendFormat": "Watts",
-          "range": false,
-          "refId": "A"
-        }
-      ]
-    },
-    {
-      "id": 25,
-      "type": "timeseries",
-      "title": "Battery Voltage",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 12,
-        "y": 17
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "volt",
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10
-          }
-        }
-      },
-      "options": {
-        "legend": {
-          "calcs": [
-            "last",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_battery_voltage{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "legendFormat": "Voltage",
-          "range": true,
-          "refId": "A"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_battery_voltage_nominal{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "legendFormat": "Nominal",
-          "range": true,
-          "refId": "B"
-        }
-      ]
-    },
-    {
-      "id": 26,
-      "type": "timeseries",
-      "title": "Output Voltage",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "grafanacloud-prom"
-      },
-      "gridPos": {
-        "h": 6,
-        "w": 6,
-        "x": 18,
-        "y": 17
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "volt",
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10
-          }
-        }
-      },
-      "options": {
-        "legend": {
-          "calcs": [
-            "last",
-            "min",
-            "max"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "grafanacloud-prom"
-          },
-          "editorMode": "code",
-          "expr": "network_ups_tools_output_voltage{job=\"custom/nut_exporter\",room=\"$room\",ups=\"$device\"}",
-          "legendFormat": "Output Voltage",
-          "range": true,
-          "refId": "A"
-        }
-      ]
     }
   ],
   "preload": false,
