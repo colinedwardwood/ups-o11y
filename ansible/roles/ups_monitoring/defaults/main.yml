@@ -1,0 +1,43 @@
+---
+# NUT — list of UPS devices (supports multiple)
+nut_ups_devices:
+  - name: eaton
+    driver: usbhid-ups
+    port: auto
+    serial: ""          # set to disambiguate multiple USB UPSes
+    description: "Eaton 5SC 1500"
+    powervalue: 1       # number of power supplies this UPS feeds on this host
+
+nut_user: nutuser
+nut_password: ""        # required — set via vault or -e
+nut_listen_address: "127.0.0.1"
+nut_listen_port: 3493
+
+# Extra upsd users beyond nutuser (e.g. a web GUI user)
+# Format: - name: webui
+#           password: secret
+#           instcmds: [test.battery.start, test.battery.stop]
+nut_extra_users: []
+
+# NUT exporter
+nut_exporter_version: "3.2.5"
+nut_exporter_arch: ""   # auto-detected from ansible_architecture if blank
+nut_exporter_port: 9199
+nut_exporter_install_dir: /opt/nut-exporter
+nut_exporter_vars_enable: >-
+  battery.charge,battery.charge.low,battery.runtime,battery.voltage,
+  battery.voltage.nominal,input.voltage,input.voltage.nominal,
+  output.voltage,ups.load,ups.realpower,ups.status
+
+# Alloy integration
+alloy_config_dir: /etc/alloy
+alloy_service_name: alloy
+nut_room_label: "IT-Closet"
+
+# Set these if you want the Alloy fragment to include its own remote_write block.
+# Leave blank if your base Alloy config already has a "metrics_service" remote_write.
+grafana_remote_write_url: ""
+grafana_remote_write_username: ""
+grafana_loki_url: ""
+grafana_loki_username: ""
+gcloud_rw_api_key: ""

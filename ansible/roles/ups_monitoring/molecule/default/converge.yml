@@ -1,0 +1,96 @@
+---
+# converge.yml — Molecule convergence play: apply the role and verify basics.
+
+- name: Converge
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Create mock Alloy config dir for CI
+      ansible.builtin.file:
+        path: /tmp/alloy-test
+        state: directory
+        mode: "0755"
+
+  roles:
+    - role: ups_monitoring
+
+  post_tasks:
+    - name: Verify NUT packages are installed
+      ansible.builtin.package_facts:
+        manager: apt
+
+    - name: Assert NUT is installed
+      ansible.builtin.assert:
+        that:
+          - "'nut' in ansible_facts.packages"
+        fail_msg: "NUT package was not installed"
+
+    - name: Verify NUT config files exist
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - /etc/nut/nut.conf
+        - /etc/nut/ups.conf
+        - /etc/nut/upsd.conf
+        - /etc/nut/upsd.users
+        - /etc/nut/upsmon.conf
+      register: _nut_config_stat
+
+    - name: Assert NUT config files are present
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+        fail_msg: "Missing NUT config file: {{ item.item }}"
+      loop: "{{ _nut_config_stat.results }}"
+
+    - name: Verify upsd.conf listens on localhost only
+      ansible.builtin.command:
+        cmd: grep -E "^LISTEN" /etc/nut/upsd.conf
+      register: _listen_line
+      changed_when: false
+
+    - name: Assert upsd.conf uses localhost
+      ansible.builtin.assert:
+        that:
+          - "'127.0.0.1' in _listen_line.stdout"
+        fail_msg: "upsd.conf is not restricted to localhost"
+
+    - name: Verify NUT exporter binary exists
+      ansible.builtin.stat:
+        path: /opt/nut-exporter/nut_exporter
+      register: _exporter_binary
+
+    - name: Assert NUT exporter binary is present and executable
+      ansible.builtin.assert:
+        that:
+          - _exporter_binary.stat.exists
+          - _exporter_binary.stat.executable
+        fail_msg: "nut_exporter binary not found or not executable"
+
+    - name: Verify NUT exporter systemd service file exists
+      ansible.builtin.stat:
+        path: /etc/systemd/system/nut-exporter.service
+      register: _exporter_service
+
+    - name: Assert nut-exporter service file is present
+      ansible.builtin.assert:
+        that:
+          - _exporter_service.stat.exists
+        fail_msg: "nut-exporter.service not found"
+
+    - name: Verify Alloy fragment was written to mock dir
+      ansible.builtin.stat:
+        path: /tmp/alloy-test/nut.alloy
+      register: _alloy_fragment
+
+    - name: Assert Alloy fragment is present
+      ansible.builtin.assert:
+        that:
+          - _alloy_fragment.stat.exists
+        fail_msg: "nut.alloy fragment was not written"
+
+    - name: Verify Alloy fragment has correct job_name
+      ansible.builtin.command:
+        cmd: grep "custom/nut_exporter" /tmp/alloy-test/nut.alloy
+      changed_when: false

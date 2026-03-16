@@ -1,0 +1,4 @@
+# Replace CHANGEME — this file should be root:nut 640
+[nutuser]
+  password  = CHANGEME
+  upsmon master

@@ -1,0 +1,113 @@
+---
+- name: Resolve binary architecture
+  ansible.builtin.set_fact:
+    _nut_exporter_arch: >-
+      {{
+        nut_exporter_arch if nut_exporter_arch | length > 0 else
+        (
+          'linux-amd64'  if ansible_architecture == 'x86_64'  else
+          'linux-arm64'  if ansible_architecture == 'aarch64' else
+          'linux-arm'
+        )
+      }}
+
+- name: Set binary facts
+  ansible.builtin.set_fact:
+    _binary_name: "nut_exporter-v{{ nut_exporter_version }}-{{ _nut_exporter_arch }}"
+    _binary_path: "{{ nut_exporter_install_dir }}/nut_exporter"
+    _download_base: "https://github.com/DRuggeri/nut_exporter/releases/download/v{{ nut_exporter_version }}"
+
+- name: Check currently installed version
+  ansible.builtin.command:
+    cmd: "{{ _binary_path }} --version"
+  register: _installed_version
+  changed_when: false
+  failed_when: false
+  become: true
+
+- name: Set needs_install fact
+  ansible.builtin.set_fact:
+    _needs_install: >-
+      {{
+        _installed_version.rc != 0 or
+        nut_exporter_version not in (_installed_version.stdout + _installed_version.stderr)
+      }}
+
+- name: Create install directory
+  ansible.builtin.file:
+    path: "{{ nut_exporter_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  become: true
+
+- name: Download binary
+  ansible.builtin.get_url:
+    url: "{{ _download_base }}/{{ _binary_name }}"
+    dest: "{{ nut_exporter_install_dir }}/{{ _binary_name }}.tmp"
+    mode: "0755"
+    timeout: 60
+  become: true
+  when: _needs_install | bool
+
+- name: Download checksums file
+  ansible.builtin.get_url:
+    url: "{{ _download_base }}/nut_exporter_{{ nut_exporter_version }}_checksums.txt"
+    dest: "{{ nut_exporter_install_dir }}/checksums.txt"
+    mode: "0644"
+    timeout: 30
+  become: true
+  when: _needs_install | bool
+
+- name: Verify checksum and install binary
+  ansible.builtin.shell:
+    cmd: |
+      cd {{ nut_exporter_install_dir }}
+      cp {{ _binary_name }}.tmp {{ _binary_name }}
+      grep "{{ _binary_name }}$" checksums.txt | sha256sum -c --status
+      mv {{ _binary_name }} nut_exporter
+      rm -f {{ _binary_name }}.tmp checksums.txt
+    executable: /bin/bash
+  become: true
+  when: _needs_install | bool
+  notify:
+    - systemd reload
+    - restart nut-exporter
+
+# Stop any old instance running from a non-standard location (e.g. ~/monitoring/)
+- name: Find legacy nut_exporter processes not from the standard path
+  ansible.builtin.command:
+    cmd: pgrep -a nut_exporter
+  register: _legacy_procs
+  changed_when: false
+  failed_when: false
+
+- name: Kill legacy nut_exporter processes
+  ansible.builtin.command:
+    cmd: "pkill -f 'nut_exporter$'"
+  become: true
+  when:
+    - _legacy_procs.rc == 0
+    - nut_exporter_install_dir not in _legacy_procs.stdout
+  failed_when: false
+
+- name: Install systemd service
+  ansible.builtin.template:
+    src: nut-exporter.service.j2
+    dest: /etc/systemd/system/nut-exporter.service
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  notify:
+    - systemd reload
+    - restart nut-exporter
+
+- name: Enable and start nut-exporter
+  ansible.builtin.systemd:
+    name: nut-exporter
+    enabled: true
+    state: started
+    daemon_reload: true
+  become: true

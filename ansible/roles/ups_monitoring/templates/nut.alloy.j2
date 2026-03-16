@@ -1,0 +1,35 @@
+// NUT exporter scrape — merged into Alloy config from {{ alloy_config_dir }}/nut.alloy
+// Assumes prometheus.remote_write "metrics_service" is defined elsewhere.
+{% for ups in nut_ups_devices %}
+
+prometheus.scrape "nut_{{ ups.name | replace('-', '_') }}" {
+  targets = [{
+    __address__ = "localhost:{{ nut_exporter_port }}",
+    instance    = constants.hostname,
+    room        = "{{ nut_room_label }}",
+    ups         = "{{ ups.name }}",
+  }]
+
+  metrics_path = "/ups_metrics"
+  params       = { "ups" = ["{{ ups.name }}"] }
+
+  job_name = "custom/nut_exporter"
+
+  scrape_interval = "30s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+{% endfor %}
+{% if grafana_remote_write_url | length > 0 %}
+
+prometheus.remote_write "metrics_service" {
+  endpoint {
+    url = "{{ grafana_remote_write_url }}"
+    basic_auth {
+      username = "{{ grafana_remote_write_username }}"
+      password = sys.env("GCLOUD_RW_API_KEY")
+    }
+  }
+}
+{% endif %}

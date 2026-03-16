@@ -1,0 +1,26 @@
+---
+# tasks/alloy.yml — Drop the NUT Alloy scrape fragment into the Alloy config directory.
+
+- name: Check that Alloy config directory exists
+  ansible.builtin.stat:
+    path: "{{ alloy_config_dir }}"
+  register: _alloy_config_dir_stat
+
+- name: Warn if Alloy config directory does not exist
+  ansible.builtin.debug:
+    msg: >
+      WARNING: Alloy config directory {{ alloy_config_dir }} does not exist.
+      Install Grafana Alloy first or set alloy_config_dir to the correct path.
+      Skipping Alloy configuration.
+  when: not _alloy_config_dir_stat.stat.exists
+
+- name: Write NUT Alloy scrape fragment
+  ansible.builtin.template:
+    src: nut.alloy.j2
+    dest: "{{ alloy_config_dir }}/nut.alloy"
+    owner: root
+    group: root
+    mode: "0644"
+  become: true
+  when: _alloy_config_dir_stat.stat.exists
+  notify: reload alloy

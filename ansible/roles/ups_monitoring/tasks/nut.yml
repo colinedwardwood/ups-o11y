@@ -1,0 +1,74 @@
+---
+# tasks/nut.yml — Install and configure Network UPS Tools.
+
+- name: Install NUT packages
+  ansible.builtin.apt:
+    name:
+      - nut
+      - nut-client
+    state: present
+    update_cache: true
+  become: true
+
+- name: Write /etc/nut/nut.conf
+  ansible.builtin.template:
+    src: nut.conf.j2
+    dest: /etc/nut/nut.conf
+    owner: root
+    group: nut
+    mode: "0644"
+  become: true
+  notify: restart nut
+
+- name: Write /etc/nut/ups.conf
+  ansible.builtin.template:
+    src: ups.conf.j2
+    dest: /etc/nut/ups.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  become: true
+  notify: restart nut
+
+- name: Write /etc/nut/upsd.conf
+  ansible.builtin.template:
+    src: upsd.conf.j2
+    dest: /etc/nut/upsd.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  become: true
+  notify: restart nut
+
+- name: Write /etc/nut/upsd.users
+  ansible.builtin.template:
+    src: upsd.users.j2
+    dest: /etc/nut/upsd.users
+    owner: root
+    group: nut
+    mode: "0640"
+  become: true
+  notify: restart nut
+
+- name: Write /etc/nut/upsmon.conf
+  ansible.builtin.template:
+    src: upsmon.conf.j2
+    dest: /etc/nut/upsmon.conf
+    owner: root
+    group: nut
+    mode: "0640"
+  become: true
+  notify: restart nut
+
+- name: Enable and start NUT services
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: true
+    state: started
+  loop:
+    - nut-driver
+    - nut-server
+    - nut-monitor
+  become: true
+  # nut-driver may fail if the USB device isn't connected in CI; treat as non-fatal
+  failed_when: false

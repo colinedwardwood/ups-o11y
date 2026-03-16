@@ -1,0 +1,19 @@
+---
+- name: Validate required variables
+  ansible.builtin.assert:
+    that:
+      - nut_password | length > 0
+      - nut_ups_devices | length > 0
+    fail_msg: "nut_password and nut_ups_devices must be set"
+
+- name: Install and configure NUT
+  ansible.builtin.include_tasks: nut.yml
+  tags: [nut]
+
+- name: Install and configure NUT exporter
+  ansible.builtin.include_tasks: nut_exporter.yml
+  tags: [nut_exporter]
+
+- name: Configure Grafana Alloy NUT scrape
+  ansible.builtin.include_tasks: alloy.yml
+  tags: [alloy]

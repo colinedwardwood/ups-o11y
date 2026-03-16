@@ -1,0 +1,34 @@
+[Unit]
+Description=Network UPS Tools Prometheus Exporter
+After=network.target nut-server.service
+Wants=nut-server.service
+
+[Service]
+Type=simple
+ExecStart=/opt/nut-exporter/nut_exporter \
+  --nut.server=127.0.0.1 \
+  --nut.vars_enable="battery.charge,battery.charge.low,battery.runtime,battery.voltage,battery.voltage.nominal,input.voltage,input.voltage.nominal,output.voltage,ups.load,ups.realpower,ups.status" \
+  --web.listen-address=":9199" \
+  --log.level=info
+
+DynamicUser=yes
+RuntimeDirectory=nut-exporter
+
+Restart=on-failure
+RestartSec=5s
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+
+[Install]
+WantedBy=multi-user.target

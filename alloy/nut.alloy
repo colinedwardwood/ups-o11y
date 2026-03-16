@@ -1,0 +1,40 @@
+// Drop this file into /etc/alloy/ — Alloy merges all *.alloy files in that dir.
+// Assumes a prometheus.remote_write "metrics_service" exists in your base config.
+//
+// If you have multiple UPS devices, add one prometheus.scrape block per device
+// and pass the NUT name via params. Each device needs its own scrape because
+// nut_exporter errors if it sees more than one UPS without a ?ups= param.
+
+prometheus.scrape "nut_eaton_a" {
+  targets = [{
+    __address__ = "localhost:9199",
+    instance    = constants.hostname,
+    room        = "IT-Closet",
+    ups         = "eaton-a",
+  }]
+
+  metrics_path = "/ups_metrics"
+  params       = { "ups" = ["eaton-a"] }
+  job_name     = "custom/nut_exporter"
+  scrape_interval = "30s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}
+
+prometheus.scrape "nut_eaton_b" {
+  targets = [{
+    __address__ = "localhost:9199",
+    instance    = constants.hostname,
+    room        = "IT-Closet",
+    ups         = "eaton-b",
+  }]
+
+  metrics_path = "/ups_metrics"
+  params       = { "ups" = ["eaton-b"] }
+  job_name     = "custom/nut_exporter"
+  scrape_interval = "30s"
+  scrape_timeout  = "10s"
+
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+}

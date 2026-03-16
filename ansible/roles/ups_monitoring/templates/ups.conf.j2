@@ -1,0 +1,11 @@
+maxretry = 3
+{% for ups in nut_ups_devices %}
+
+[{{ ups.name }}]
+  driver = {{ ups.driver }}
+  port   = {{ ups.port }}
+  desc   = "{{ ups.description }}"
+{% if ups.serial | default('') | length > 0 %}
+  serial = {{ ups.serial }}
+{% endif %}
+{% endfor %}

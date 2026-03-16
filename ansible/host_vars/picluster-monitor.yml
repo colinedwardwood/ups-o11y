@@ -1,0 +1,26 @@
+---
+nut_ups_devices:
+  - name: eaton-a
+    driver: usbhid-ups
+    port: auto
+    serial: P138M45E67
+    description: "Eaton 5SC 1500 - IT-Closet A"
+    powervalue: 1
+  - name: eaton-b
+    driver: usbhid-ups
+    port: auto
+    serial: P138M45E49
+    description: "Eaton 5SC 1500 - IT-Closet B"
+    powervalue: 0
+
+nut_extra_users:
+  - name: webui
+    password: "{{ vault_nut_webui_password }}"
+    instcmds:
+      - test.battery.start
+      - test.battery.start.quick
+      - test.battery.stop
+      - test.panel.start
+      - test.panel.stop
+
+nut_exporter_arch: linux-arm64

@@ -1,0 +1,35 @@
+[Unit]
+Description=Network UPS Tools Prometheus Exporter
+After=network.target nut-server.service
+Wants=nut-server.service
+
+[Service]
+Type=simple
+ExecStart={{ nut_exporter_install_dir }}/nut_exporter \
+  --nut.server=127.0.0.1 \
+  --nut.serverport={{ nut_listen_port }} \
+  --nut.vars_enable="{{ nut_exporter_vars_enable | replace('\n', '') | replace('  ', '') | trim }}" \
+  --web.listen-address=":{{ nut_exporter_port }}" \
+  --log.level=info
+
+DynamicUser=yes
+RuntimeDirectory=nut-exporter
+
+Restart=on-failure
+RestartSec=5s
+
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictRealtime=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+
+[Install]
+WantedBy=multi-user.target

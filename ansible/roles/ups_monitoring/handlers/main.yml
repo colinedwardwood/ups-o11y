@@ -1,0 +1,42 @@
+---
+# handlers/main.yml
+
+- name: Restart nut-driver
+  ansible.builtin.systemd:
+    name: nut-driver
+    state: restarted
+    enabled: true
+  listen: restart nut
+
+- name: Restart nut-server
+  ansible.builtin.systemd:
+    name: nut-server
+    state: restarted
+    enabled: true
+  listen: restart nut
+
+- name: Restart nut-monitor
+  ansible.builtin.systemd:
+    name: nut-monitor
+    state: restarted
+    enabled: true
+  listen: restart nut
+
+- name: Reload systemd daemon
+  ansible.builtin.systemd:
+    daemon_reload: true
+  listen: systemd reload
+
+- name: Restart nut-exporter
+  ansible.builtin.systemd:
+    name: nut-exporter
+    state: restarted
+    enabled: true
+  listen: restart nut-exporter
+
+- name: Reload Alloy
+  ansible.builtin.systemd:
+    name: "{{ alloy_service_name }}"
+    state: reloaded
+  failed_when: false
+  listen: reload alloy

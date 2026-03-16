@@ -1,0 +1,11 @@
+[{{ nut_user }}]
+  password  = {{ nut_password }}
+  upsmon master
+{% for user in nut_extra_users %}
+
+[{{ user.name }}]
+  password = {{ user.password }}
+{% for cmd in user.instcmds | default([]) %}
+  instcmds = {{ cmd }}
+{% endfor %}
+{% endfor %}

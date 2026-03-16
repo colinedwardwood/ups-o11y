@@ -1,0 +1,251 @@
+# UPS alert rules — pushed via grafana/deploy.sh
+# Folder: HomeLab (64F1iLT4z), routed to Discord (parliamentobscura)
+
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: UPS Monitoring
+    folder: HomeLab
+    interval: 1m
+    rules:
+
+      - uid: ups-on-battery
+        title: "UPS On Battery"
+        condition: C
+        for: 1m
+        annotations:
+          summary: "{{ $labels.ups }} is on battery ({{ $labels.room }})"
+          description: "Mains power lost. Check for outage or tripped circuit."
+        labels:
+          severity: critical
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_ups_status{job="custom/nut_exporter",flag="OB"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-low-battery
+        title: "UPS Low Battery"
+        condition: C
+        for: 0s
+        annotations:
+          summary: "{{ $labels.ups }} battery critically low"
+          description: "LB flag set. Initiate graceful shutdown now."
+        labels:
+          severity: critical
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_ups_status{job="custom/nut_exporter",flag="LB"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-exporter-down
+        title: "NUT Exporter Down"
+        condition: C
+        for: 3m
+        annotations:
+          summary: "nut_exporter on {{ $labels.instance }} is unreachable"
+          description: "UPS monitoring is blind. Check nut-exporter service."
+        labels:
+          severity: critical
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'up{job="custom/nut_exporter"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [1] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-battery-charge-low
+        title: "UPS Battery Charge Critical"
+        condition: C
+        for: 5m
+        annotations:
+          summary: "{{ $labels.ups }} charge at {{ $values.A.Value | printf \"%.0f\" }}%"
+          description: "Battery below 25% for 5 minutes. Runtime may be insufficient for graceful shutdown."
+        labels:
+          severity: warning
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_battery_charge{job="custom/nut_exporter"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [25] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-battery-runtime-low
+        title: "UPS Battery Runtime Low"
+        condition: C
+        for: 2m
+        annotations:
+          summary: "{{ $labels.ups }} has < 5 min runtime remaining"
+          description: "Under 300s of runtime. upsmon will trigger emergency shutdown if mains doesn't return."
+        labels:
+          severity: warning
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_battery_runtime{job="custom/nut_exporter"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: lt, params: [300] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-battery-replace
+        title: "UPS Battery Needs Replacement"
+        condition: C
+        for: 10m
+        annotations:
+          summary: "{{ $labels.ups }} RB flag set"
+          description: "Schedule a battery replacement."
+        labels:
+          severity: warning
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 600, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_ups_status{job="custom/nut_exporter",flag="RB"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-overloaded
+        title: "UPS Overloaded"
+        condition: C
+        for: 2m
+        annotations:
+          summary: "{{ $labels.ups }} OVER flag set"
+          description: "Reduce load to prevent shutdown or damage."
+        labels:
+          severity: warning
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_ups_status{job="custom/nut_exporter",flag="OVER"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: threshold
+              expression: A
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [A] }
+
+      - uid: ups-input-voltage-anomaly
+        title: "UPS Input Voltage Anomaly"
+        condition: C
+        for: 5m
+        annotations:
+          summary: "{{ $labels.ups }} input voltage outside 108–132 V"
+          description: "Persistent brownout or surge — may indicate infrastructure issues beyond what the UPS can compensate."
+        labels:
+          severity: warning
+          team: homelab
+        data:
+          - refId: A
+            relativeTimeRange: { from: 300, to: 0 }
+            datasourceUid: grafanacloud-prom
+            model:
+              expr: 'network_ups_tools_input_voltage{job="custom/nut_exporter"}'
+              instant: true
+              refId: A
+          - refId: C
+            datasourceUid: __expr__
+            model:
+              refId: C
+              type: math
+              expression: "$A < 108 || $A > 132"
+              conditions:
+                - evaluator: { type: gt, params: [0] }
+                  operator: { type: and }
+                  reducer: { type: last }
+                  query: { params: [C] }
