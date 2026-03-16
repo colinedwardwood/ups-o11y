@@ -1,406 +1,687 @@
 {
-  "uid": "ups-fleet",
-  "title": "UPS Fleet",
-  "description": "Fleet overview — one row per UPS device",
-  "tags": ["ups", "nut", "fleet"],
-  "schemaVersion": 39,
-  "version": 1,
-  "refresh": "30s",
-  "time": { "from": "now-1h", "to": "now" },
-  "timepicker": {},
-  "timezone": "browser",
-  "fiscalYearStartMonth": 0,
-  "graphTooltip": 1,
-  "templating": {
+  "annotations": {
     "list": [
       {
-        "name": "ups",
-        "label": "UPS",
-        "type": "query",
-        "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-        "definition": "label_values(network_ups_tools_battery_charge{job=\"custom/nut_exporter\"}, ups)",
-        "query": { "query": "label_values(network_ups_tools_battery_charge{job=\"custom/nut_exporter\"}, ups)", "refId": "StandardVariableQuery" },
-        "refresh": 2,
-        "sort": 1,
-        "multi": true,
-        "includeAll": true,
-        "allValue": ".+",
-        "current": {},
-        "hide": 0
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
       }
     ]
   },
+  "description": "Fleet overview \u2014 one row per UPS device",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "liveNow": false,
   "panels": [
     {
-      "id": 1,
-      "title": "UPSes Online",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center"
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "green", "value": 1 }
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
             ]
           },
-          "noValue": "0"
-        },
-        "overrides": []
+          "unit": "short"
+        }
       },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 0,
+        "y": 0
+      },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "count(network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\", flag=\"OL\"} == 1)",
           "instant": true,
-          "legendFormat": "Online"
+          "legendFormat": "Online",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "UPSes Online",
+      "type": "stat"
     },
     {
-      "id": 2,
-      "title": "On Battery",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "orientation": "auto",
-        "textMode": "auto",
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center"
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "short",
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
+          "noValue": "0",
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           },
-          "noValue": "0"
-        },
-        "overrides": []
+          "unit": "short"
+        }
       },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 3,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "count(network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\", flag=\"OB\"} == 1) OR vector(0)",
           "instant": true,
-          "legendFormat": "On Battery"
+          "legendFormat": "On Battery",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "On Battery",
+      "type": "stat"
     },
     {
-      "id": 3,
-      "title": "Min Runtime",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "orientation": "auto",
-        "textMode": "value_and_name",
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "center"
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
+          "max": 100,
+          "min": 0,
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 300 },
-              { "color": "green", "value": 600 }
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 70
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
             ]
-          }
-        },
-        "overrides": []
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "min by (ups) (network_ups_tools_battery_runtime{job=\"custom/nut_exporter\", ups=~\"$ups\"})",
-          "instant": true,
-          "legendFormat": "{{ups}}"
+          },
+          "unit": "percent"
         }
-      ]
-    },
-    {
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 3,
+        "x": 6,
+        "y": 0
+      },
       "id": 4,
-      "title": "Total Load",
-      "type": "stat",
-      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
-        "orientation": "auto",
-        "textMode": "auto",
         "colorMode": "background",
         "graphMode": "none",
-        "justifyMode": "center"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "color": { "mode": "thresholds" },
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              { "color": "green", "value": null },
-              { "color": "orange", "value": 70 },
-              { "color": "red", "value": 90 }
-            ]
-          }
+        "justifyMode": "center",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
         },
-        "overrides": []
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
       },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "avg(network_ups_tools_ups_load{job=\"custom/nut_exporter\", ups=~\"$ups\"})",
           "instant": true,
-          "legendFormat": "Avg Load"
+          "legendFormat": "Avg Load",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "Total Load",
+      "type": "stat"
     },
     {
-      "id": 5,
-      "title": "Battery Runtime Trend",
-      "type": "timeseries",
-      "gridPos": { "h": 4, "w": 8, "x": 16, "y": 0 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": false }
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "s",
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "showPoints": "never"
+          "color": {
+            "mode": "thresholds"
           },
-          "thresholds": { "mode": "absolute", "steps": [] }
-        },
-        "overrides": []
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
-          "legendFormat": "{{ups}}"
-        }
-      ]
-    },
-    {
-      "id": 10,
-      "title": "Fleet Status",
-      "type": "table",
-      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 4 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "frameIndex": 0,
-        "showHeader": true,
-        "sortBy": [{ "displayName": "UPS", "desc": false }],
-        "footer": { "show": false, "reducer": ["sum"], "countRows": false }
-      },
-      "fieldConfig": {
-        "defaults": {
           "custom": {
             "align": "left",
-            "cellOptions": { "type": "auto" },
+            "cellOptions": {
+              "type": "auto"
+            },
+            "footer": {
+              "reducers": []
+            },
             "inspect": false,
             "minWidth": 80
           },
-          "color": { "mode": "thresholds" },
-          "thresholds": { "mode": "absolute", "steps": [{ "color": "text", "value": null }] }
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": 0
+              }
+            ]
+          }
         },
         "overrides": [
           {
-            "matcher": { "id": "byName", "options": "Status" },
+            "matcher": {
+              "id": "byName",
+              "options": "Status"
+            },
             "properties": [
-              { "id": "custom.width", "value": 100 },
-              { "id": "custom.cellOptions", "value": { "type": "color-background", "mode": "basic" } },
-              { "id": "mappings", "value": [
-                { "type": "value", "options": { "OL": { "text": "Online", "color": "green", "index": 0 } } },
-                { "type": "value", "options": { "OB": { "text": "On Battery", "color": "orange", "index": 1 } } },
-                { "type": "value", "options": { "OB LB": { "text": "Low Battery", "color": "red", "index": 2 } } },
-                { "type": "value", "options": { "OL CHRG": { "text": "Charging", "color": "blue", "index": 3 } } }
-              ]}
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Battery %" },
-            "properties": [
-              { "id": "unit", "value": "percent" },
-              { "id": "custom.width", "value": 110 },
-              { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "basic" } },
-              { "id": "color", "value": { "mode": "thresholds" } },
-              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
-                { "color": "red", "value": null },
-                { "color": "orange", "value": 30 },
-                { "color": "green", "value": 80 }
-              ]}}
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Runtime" },
-            "properties": [
-              { "id": "unit", "value": "s" },
-              { "id": "custom.width", "value": 110 },
-              { "id": "color", "value": { "mode": "thresholds" } },
-              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
-                { "color": "red", "value": null },
-                { "color": "orange", "value": 300 },
-                { "color": "green", "value": 600 }
-              ]}}
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Load %" },
-            "properties": [
-              { "id": "unit", "value": "percent" },
-              { "id": "custom.width", "value": 100 },
-              { "id": "custom.cellOptions", "value": { "type": "gauge", "mode": "basic" } },
-              { "id": "color", "value": { "mode": "thresholds" } },
-              { "id": "thresholds", "value": { "mode": "absolute", "steps": [
-                { "color": "green", "value": null },
-                { "color": "orange", "value": 70 },
-                { "color": "red", "value": 90 }
-              ]}}
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Input V" },
-            "properties": [
-              { "id": "unit", "value": "volt" },
-              { "id": "custom.width", "value": 90 },
-              { "id": "decimals", "value": 1 }
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Output V" },
-            "properties": [
-              { "id": "unit", "value": "volt" },
-              { "id": "custom.width", "value": 90 },
-              { "id": "decimals", "value": 1 }
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "Room" },
-            "properties": [
-              { "id": "custom.width", "value": 120 }
-            ]
-          },
-          {
-            "matcher": { "id": "byName", "options": "UPS" },
-            "properties": [
-              { "id": "custom.width", "value": 120 },
-              { "id": "links", "value": [
-                {
-                  "title": "UPS Detail",
-                  "url": "/d/cdz2g1b7hnda8a/ups-monitoring?var-device=${__data.fields.UPS}",
-                  "targetBlank": false
+              {
+                "id": "custom.width",
+                "value": 127
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "color-background"
                 }
-              ]}
+              },
+              {
+                "id": "mappings",
+                "value": [
+                  {
+                    "options": {
+                      "1": {
+                        "color": "green",
+                        "index": 0,
+                        "text": "Online"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "0": {
+                        "color": "orange",
+                        "index": 1,
+                        "text": "On Battery"
+                      }
+                    },
+                    "type": "value"
+                  },
+                  {
+                    "options": {
+                      "match": "null+nan",
+                      "result": {
+                        "color": "orange",
+                        "index": 2,
+                        "text": "On Battery"
+                      }
+                    },
+                    "type": "special"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Battery %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 157
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": 0
+                    },
+                    {
+                      "color": "orange",
+                      "value": 30
+                    },
+                    {
+                      "color": "green",
+                      "value": 80
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Runtime"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              },
+              {
+                "id": "custom.width",
+                "value": 151
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "red",
+                      "value": 0
+                    },
+                    {
+                      "color": "orange",
+                      "value": 300
+                    },
+                    {
+                      "color": "green",
+                      "value": 600
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Load %"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percent"
+              },
+              {
+                "id": "custom.width",
+                "value": 139
+              },
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "mode": "basic",
+                  "type": "gauge"
+                }
+              },
+              {
+                "id": "color",
+                "value": {
+                  "mode": "thresholds"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": 0
+                    },
+                    {
+                      "color": "orange",
+                      "value": 70
+                    },
+                    {
+                      "color": "red",
+                      "value": 90
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Input V"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "volt"
+              },
+              {
+                "id": "custom.width",
+                "value": 146
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Output V"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "volt"
+              },
+              {
+                "id": "custom.width",
+                "value": 141
+              },
+              {
+                "id": "decimals",
+                "value": 1
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Room"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 152
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "UPS"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 165
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": false,
+                    "title": "UPS Detail",
+                    "url": "/d/cdz2g1b7hnda8a/ups-monitoring?var-device=${__data.fields.UPS}"
+                  }
+                ]
+              }
             ]
           }
         ]
       },
+      "gridPos": {
+        "h": 8,
+        "w": 15,
+        "x": 9,
+        "y": 0
+      },
+      "id": 10,
+      "options": {
+        "cellHeight": "sm",
+        "frameIndex": 0,
+        "showHeader": true,
+        "sortBy": [
+          {
+            "desc": false,
+            "displayName": "UPS"
+          }
+        ]
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_battery_charge{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "A"
         },
         {
-          "refId": "B",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "B"
         },
         {
-          "refId": "C",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_ups_load{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "C"
         },
         {
-          "refId": "D",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_input_voltage{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "D"
         },
         {
-          "refId": "E",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_output_voltage{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "E"
         },
         {
-          "refId": "F",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "label_replace(network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\", flag=\"OB\"} == 1, \"status_flag\", \"OB\", \"flag\", \".*\")",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "label_replace(network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\"} == 1, \"status_text\", \"$1\", \"flag\", \"(.*)\")",
+          "hide": true,
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "F"
         },
         {
-          "refId": "G",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\", flag=\"OL\"} == 1",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "network_ups_tools_ups_status{job=\"custom/nut_exporter\", ups=~\"$ups\", flag=\"OL\"}",
           "instant": true,
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "G"
         }
       ],
+      "title": "Fleet Status",
       "transformations": [
         {
           "id": "labelsToFields",
-          "options": { "mode": "columns" }
-        },
-        {
-          "id": "joinByField",
-          "options": { "byField": "ups", "mode": "outer" }
-        },
-        {
-          "id": "filterFieldsByName",
           "options": {
-            "include": {
-              "names": ["ups", "room", "Value #A", "Value #B", "Value #C", "Value #D", "Value #E"]
+            "mode": "columns"
+          }
+        },
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "groupBy",
+          "options": {
+            "fields": {
+              "network_ups_tools_battery_charge": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "network_ups_tools_battery_runtime": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "network_ups_tools_input_voltage": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "network_ups_tools_output_voltage": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "network_ups_tools_ups_load": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "network_ups_tools_ups_status": {
+                "aggregations": [
+                  "lastNotNull"
+                ],
+                "operation": "aggregate"
+              },
+              "room": {
+                "aggregations": [],
+                "operation": "groupby"
+              },
+              "ups": {
+                "aggregations": [],
+                "operation": "groupby"
+              }
             }
           }
         },
@@ -408,165 +689,549 @@
           "id": "organize",
           "options": {
             "renameByName": {
-              "ups": "UPS",
+              "network_ups_tools_battery_charge": "Battery %",
+              "network_ups_tools_battery_charge (lastNotNull)": "Battery %",
+              "network_ups_tools_battery_runtime": "Runtime",
+              "network_ups_tools_battery_runtime (lastNotNull)": "Runtime",
+              "network_ups_tools_input_voltage": "Input V",
+              "network_ups_tools_input_voltage (lastNotNull)": "Input V",
+              "network_ups_tools_output_voltage": "Output V",
+              "network_ups_tools_output_voltage (lastNotNull)": "Output V",
+              "network_ups_tools_ups_load": "Load %",
+              "network_ups_tools_ups_load (lastNotNull)": "Load %",
+              "network_ups_tools_ups_status": "Status",
+              "network_ups_tools_ups_status (lastNotNull)": "Status",
               "room": "Room",
-              "Value #A": "Battery %",
-              "Value #B": "Runtime",
-              "Value #C": "Load %",
-              "Value #D": "Input V",
-              "Value #E": "Output V"
+              "ups": "UPS"
             }
           }
         }
-      ]
+      ],
+      "type": "table"
     },
     {
-      "id": 20,
-      "title": "Battery Charge — All UPS",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": true
+          "color": {
+            "mode": "palette-classic"
           },
-          "thresholds": { "mode": "absolute", "steps": [
-            { "color": "green", "value": null },
-            { "color": "orange", "value": 30 },
-            { "color": "red", "value": 20 }
-          ]}
-        },
-        "overrides": []
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "network_ups_tools_battery_charge{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
-          "legendFormat": "{{ups}}"
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "s"
         }
-      ]
-    },
-    {
-      "id": 21,
-      "title": "Battery Runtime — All UPS",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 9,
+        "x": 0,
+        "y": 4
+      },
+      "id": 5,
       "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "s",
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": true
-          },
-          "thresholds": { "mode": "absolute", "steps": [] }
+        "annotations": {
+          "multiLane": false
         },
-        "overrides": []
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
       },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
           "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
-          "legendFormat": "{{ups}}"
+          "legendFormat": "{{ups}}",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "Battery Runtime Trend",
+      "type": "timeseries"
     },
     {
-      "id": 22,
-      "title": "Load % — All UPS",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 22 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "max": 100,
           "min": 0,
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": true
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": 0
+              },
+              {
+                "color": "orange",
+                "value": 30
+              },
+              {
+                "color": "red",
+                "value": 20
+              }
+            ]
           },
-          "thresholds": { "mode": "absolute", "steps": [] }
-        },
-        "overrides": []
+          "unit": "percent"
+        }
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 8
+      },
+      "id": 20,
+      "options": {
+        "annotations": {
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "network_ups_tools_ups_load{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
-          "legendFormat": "{{ups}}"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "network_ups_tools_battery_charge{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
+          "legendFormat": "{{ups}}",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "Battery Charge \u2014 All UPS",
+      "type": "timeseries"
     },
     {
-      "id": 23,
-      "title": "Input Voltage — All UPS",
-      "type": "timeseries",
-      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 22 },
-      "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-      "options": {
-        "tooltip": { "mode": "multi", "sort": "none" },
-        "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "volt",
-          "decimals": 1,
-          "color": { "mode": "palette-classic" },
-          "custom": {
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "drawStyle": "line",
-            "lineInterpolation": "smooth",
-            "showPoints": "never",
-            "spanNulls": true
+          "color": {
+            "mode": "palette-classic"
           },
-          "thresholds": { "mode": "absolute", "steps": [] }
-        },
-        "overrides": []
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "s"
+        }
       },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 8
+      },
+      "id": 21,
+      "options": {
+        "annotations": {
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
       "targets": [
         {
-          "refId": "A",
-          "datasource": { "type": "prometheus", "uid": "grafanacloud-prom" },
-          "expr": "network_ups_tools_input_voltage{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
-          "legendFormat": "{{ups}}"
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "network_ups_tools_battery_runtime{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
+          "legendFormat": "{{ups}}",
+          "refId": "A"
         }
-      ]
+      ],
+      "title": "Battery Runtime \u2014 All UPS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "percent"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 16
+      },
+      "id": 22,
+      "options": {
+        "annotations": {
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "network_ups_tools_ups_load{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
+          "legendFormat": "{{ups}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Load % \u2014 All UPS",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "grafanacloud-prom"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "showValues": false,
+            "spanNulls": true,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": []
+          },
+          "unit": "volt"
+        }
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 16
+      },
+      "id": 23,
+      "options": {
+        "annotations": {
+          "multiLane": false
+        },
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "pluginVersion": "13.0.0-22843068776.patch2",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "grafanacloud-prom"
+          },
+          "expr": "network_ups_tools_input_voltage{job=\"custom/nut_exporter\", ups=~\"$ups\"}",
+          "legendFormat": "{{ups}}",
+          "refId": "A"
+        }
+      ],
+      "title": "Input Voltage \u2014 All UPS",
+      "type": "timeseries"
     }
-  ]
+  ],
+  "preload": false,
+  "refresh": "30s",
+  "schemaVersion": 42,
+  "tags": [
+    "ups",
+    "nut",
+    "fleet"
+  ],
+  "templating": {
+    "list": [
+      {
+        "allValue": ".+",
+        "allowCustomValue": true,
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "grafanacloud-prom"
+        },
+        "definition": "label_values(network_ups_tools_battery_charge{job=\"custom/nut_exporter\"}, ups)",
+        "hide": 0,
+        "includeAll": true,
+        "label": "UPS",
+        "multi": true,
+        "name": "ups",
+        "options": [],
+        "query": {
+          "query": "label_values(network_ups_tools_battery_charge{job=\"custom/nut_exporter\"}, ups)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 2,
+        "regex": "",
+        "regexApplyTo": "value",
+        "skipUrlSync": false,
+        "sort": 1,
+        "type": "query"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5s",
+      "10s",
+      "30s",
+      "1m",
+      "5m",
+      "15m",
+      "30m",
+      "1h",
+      "2h",
+      "1d"
+    ]
+  },
+  "timezone": "browser",
+  "title": "UPS Fleet",
+  "uid": "ups-fleet"
 }
