@@ -1,2 +1,4 @@
 ansible/inventory.ini
+blog/
+blog-post.md
 *.retry

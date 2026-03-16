@@ -1,8 +1,8 @@
 # ups-o11y
 
-UPS monitoring stack using [NUT](https://networkupstools.org/), [nut_exporter](https://github.com/DRuggeri/nut_exporter), [Grafana Alloy](https://grafana.com/docs/alloy/), and Grafana Cloud. Produces Prometheus metrics, a dashboard, and alert rules for any USB UPS that NUT supports (which is most of them).
+UPS monitoring stack using [NUT](https://networkupstools.org/), [nut_exporter](https://github.com/DRuggeri/nut_exporter), [Grafana Alloy](https://grafana.com/docs/alloy/), and Grafana Cloud. Built around two Eaton 5SC 1500s on a Raspberry Pi, but it works with any USB UPS that NUT supports.
 
-Written for an Eaton 5SC 1500 on a Raspberry Pi but the only things you'd need to change for a different UPS are `nut_ups_name` and `nut_ups_driver` in `nut/ups.conf`.
+![Fleet dashboard showing both UPSes online with battery, runtime, and load metrics](screenshots/ups-o11y-dashboard-fleet-view.png)
 
 ## What's here
 
@@ -10,11 +10,11 @@ Written for an Eaton 5SC 1500 on a Raspberry Pi but the only things you'd need t
 nut/                    NUT server install script + config files
 nut-exporter/           nut_exporter v3.2.5 install script + systemd unit
 alloy/nut.alloy         Alloy scrape fragment (drop into /etc/alloy/)
-grafana/dashboard.json  Grafana dashboard (export + battery health panels added)
+grafana/dashboard.json  Per-device UPS dashboard
+grafana/fleet-dashboard.json  Fleet overview — one row per UPS
 grafana/alerts.yaml     8 alert rules
-grafana/deploy.sh       Push dashboard + alerts to Grafana Cloud via API
+grafana/deploy.sh       Push dashboards + alerts to Grafana Cloud via API
 ansible/                Full Ansible role targeting Ubuntu 24.04
-blog-post.md            Write-up explaining the whole thing
 ```
 
 ## Prerequisites
@@ -29,21 +29,21 @@ blog-post.md            Write-up explaining the whole thing
 **Bash:**
 
 ```bash
-git clone https://github.com/colinwoodruff/ups-o11y.git && cd ups-o11y
+git clone https://github.com/colinedwardwood/ups-o11y.git && cd ups-o11y
 
-# NUT — will generate a password if you don't set one
+# NUT — generates a password if you don't set one
 NUT_PASSWORD="$(openssl rand -base64 24)" sudo -E bash nut/install-nut.sh
 upsc eaton@localhost   # verify
 
 # nut_exporter — auto-detects amd64/arm64/arm
 sudo bash nut-exporter/install-nut-exporter.sh
-curl -s http://localhost:9199/ups_metrics | grep battery_charge
+curl -s 'http://localhost:9199/ups_metrics?ups=eaton' | grep battery_charge
 
-# Alloy scrape config — edit room label and ups name to match
+# Alloy scrape config — edit room label and ups names to match your setup
 sudo cp alloy/nut.alloy /etc/alloy/nut.alloy
 sudo systemctl reload alloy
 
-# Grafana dashboard + alerts
+# Grafana dashboards + alerts
 GRAFANA_TOKEN=<your-api-key> GRAFANA_URL=https://yourinstance.grafana.net bash grafana/deploy.sh
 ```
 
@@ -57,6 +57,24 @@ ansible-playbook -i ansible/inventory.ini ansible/playbook.yml \
 ```
 
 See [ansible/README.md](ansible/README.md) for vault usage and variable reference.
+
+## Multiple UPS devices
+
+If you have more than one UPS on the same host, use `serial` in `ups.conf` to pin each device — USB enumeration order isn't stable across reboots:
+
+```
+[eaton-a]
+  driver = usbhid-ups
+  port   = auto
+  serial = P138M45E67
+
+[eaton-b]
+  driver = usbhid-ups
+  port   = auto
+  serial = P138M45E49
+```
+
+The Alloy fragment and Ansible role both handle multiple devices. See `alloy/nut.alloy` for the two-scrape pattern and `ansible/host_vars/` for an example.
 
 ## Security
 
@@ -78,12 +96,18 @@ See [ansible/README.md](ansible/README.md) for vault usage and variable referenc
 | UPS Overloaded | `flag="OVER"` for 2 min | warning |
 | Input Voltage Anomaly | outside 108–132 V for 5 min | warning |
 
-## Dashboard
+## Dashboards
 
-Built on top of the existing UPS Monitoring dashboard. Added a Battery Health row: charge gauge, load gauge, runtime stat, real power stat, battery voltage and output voltage time series. Default time range widened to 24h.
+Two dashboards are included. `grafana/deploy.sh` pushes both.
+
+**Per-device view** — manufacturer, model, serial, runtime stat, battery charge gauge, charge & load trends, input/output voltage with acceptable range bands, real power gauge and trend, UPS status flags.
+
+![Per-device dashboard showing battery charge, load, voltage, and real power for a single UPS](screenshots/ups-o11y-dashboard-device-view.png)
+
+**Fleet view** — summary stats (online count, on-battery count, total load), a table with one row per UPS showing battery %, runtime, load %, input/output voltage, and status — plus overlaid time series for all devices.
 
 ## Tested with
 
-- Eaton 5SC 1500 (`usbhid-ups` driver)
+- Eaton 5SC 1500 (`usbhid-ups` driver) × 2
 - Raspberry Pi 5, Ubuntu 24.04 arm64
 - nut_exporter v3.2.5 / Grafana Alloy v1.x
