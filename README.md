@@ -2,8 +2,6 @@
 
 UPS monitoring stack using [NUT](https://networkupstools.org/), [nut_exporter](https://github.com/DRuggeri/nut_exporter), [Grafana Alloy](https://grafana.com/docs/alloy/), and Grafana Cloud. Built around two Eaton 5SC 1500s on a Raspberry Pi, but it works with any USB UPS that NUT supports.
 
-![Fleet dashboard showing both UPSes online with battery, runtime, and load metrics](screenshots/ups-o11y-dashboard-fleet-view.png)
-
 ## What's here
 
 ```
@@ -105,6 +103,8 @@ Two dashboards are included. `grafana/deploy.sh` pushes both.
 ![Per-device dashboard showing battery charge, load, voltage, and real power for a single UPS](screenshots/ups-o11y-dashboard-device-view.png)
 
 **Fleet view** — summary stats (online count, on-battery count, total load), a table with one row per UPS showing battery %, runtime, load %, input/output voltage, and status — plus overlaid time series for all devices.
+
+![Fleet dashboard showing both UPSes online with battery, runtime, and load metrics](screenshots/ups-o11y-dashboard-fleet-view.png)
 
 ## Tested with
 
